@@ -122,6 +122,18 @@ P0              = [ sig2_r        0 0 0 0 0 0 0 0 0
                         0 0 0 0 r2_vm     0 0 
                         0 0 0 0 0 r2_vm     0   
                         0 0 0 0 0 0 r2_vm     ];  
+
+    % With rt measured (8 measurements)
+    %{
+    R0              = [ r2_rm     0 0 0 0 0 0 0
+                        0 r2_rm     0 0 0 0 0 0
+                        0 0 r2_rm     0 0 0 0 0
+                        0 0 0 r2_thetam 0 0 0 0
+                        0 0 0 0 10 0 0 0% rt extra
+                        0 0 0 0 0 r2_vm     0 0 
+                        0 0 0 0 0 0 r2_vm     0   
+                        0 0 0 0 0 0 0 r2_vm     ];  
+ %}
  
 fprintf(' Complete \n')
 

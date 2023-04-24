@@ -19,7 +19,7 @@
 % Last Edit : Cory Fraser - JAN 29, 2018
 % Copyright(c) 2018 by Cory Fraser
 %% ========================================================================
-function gLLA = ECEF_to_gLLA(r_ECEF)
+function gLLA = ECEF_to_GEO(r_ECEF)
 
 
 % ECEF Components

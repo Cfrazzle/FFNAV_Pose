@@ -33,7 +33,8 @@ y_ECI   = [0 1 0];
 z_ECI   = [0 0 1];
 
 %Calculating the psotion/velocity magnitudes
-r = norm(R);  v = norm(V);
+r = norm(R);  
+v = norm(V);
 
 % Semi-major Axis
 SMA = r / (2 - (r*v^2)/mu );

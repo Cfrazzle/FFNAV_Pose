@@ -74,7 +74,7 @@ Constants.Rvec_Sun = PositionSun(Constants.JD);
 Constants.Rvec_Moon = PositionMoon(Constants.JD);
 %% Output =================================================================   
 filename = 'AstroConstants.mat';
-pathname = fileparts('C:\Users\Cory\Desktop\FFNAV Data\');
+pathname = fileparts('C:\Users\coryt\Desktop\FFNAV Data\');
 file_out = fullfile(pathname, filename);
 save(file_out, 'Constants', 'ConstantsModel', 'deg2rad','rad2deg')...
     %,'DE436Coeff', 'PC');

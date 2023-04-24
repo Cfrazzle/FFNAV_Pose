@@ -23,7 +23,8 @@ function [output] = FFNAV_EKF_Propagation(input_pre, time_step, mu, Q)
 % ========================================================================
 
 %% Initialize and assign data
-T = time_step;              %Time step for integration
+
+T = time_step; % Time step for integration
 
 % Previous State Vector (10x1 Matrix)
 x            = input_pre(1);
@@ -36,11 +37,6 @@ y_dot        = input_pre(7);
 z_dot        = input_pre(8);
 theta_dot    = input_pre(9);
 rt_dot       = input_pre(10);
-
-%Check theta for wrapping
-%if theta > 2*pi
-%    theta = AngleRangeRad(theta)
-%end
 
 state_pre =  [   x; y; z; theta; rt; ...
     x_dot; y_dot; z_dot; ...
@@ -57,24 +53,27 @@ P_pre = [ input_pre(11:20)'
     input_pre(81:90)'
     input_pre(91:100)'
     input_pre(101:110)' ];
+
 % =========================================================================
 %% EKF Propagation Step
 
 % Runge-Kutta-Merson integration to propagate state vector (10x1 Matrix)
-k1 = FFNAV_EKFdot([state_pre], mu);
-k2 = FFNAV_EKFdot([state_pre + (1/3)*k1*T], mu);
-k3 = FFNAV_EKFdot([state_pre + (1/6)*k1*T + (1/6)*k2*T], mu);
-k4 = FFNAV_EKFdot([state_pre + (1/8)*k1*T + (3/8)*k3*T], mu);
-k5 = FFNAV_EKFdot([state_pre + (1/2)*k1*T - (3/2)*k3*T + 2*k4*T], mu);
+k1 = FFNAV_EKFdot(state_pre, mu);
+k2 = FFNAV_EKFdot(state_pre + (1/3)*k1*T, mu);
+k3 = FFNAV_EKFdot(state_pre + (1/6)*k1*T + (1/6)*k2*T, mu);
+k4 = FFNAV_EKFdot(state_pre + (1/8)*k1*T + (3/8)*k3*T, mu);
+k5 = FFNAV_EKFdot(state_pre + (1/2)*k1*T - (3/2)*k3*T + 2*k4*T, mu);
 
 state_priori = state_pre + (1/6)*(k1 + 4*k4 + k5)*T;
 
 % Discrete-time state transition matrix to propagate the covariance (10x10 Matrix)
-phi = FFNAV_EKF_STM(input_pre, T, mu);
+phi      = FFNAV_EKF_STM(input_pre, T, mu);
 P_priori = phi*P_pre*phi' + Q;
+
 % =========================================================================
 %% Convert data into output vector format (1x110 Matrix)
 
+% Vectorized State Estimate Covariance (1x100)
 P_priori = [ P_priori(1,:) P_priori(2,:) P_priori(3,:) P_priori(4,:)...
     P_priori(5,:) P_priori(6,:) P_priori(7,:) P_priori(8,:)...
     P_priori(9,:) P_priori(10,:) ];
@@ -82,4 +81,3 @@ P_priori = [ P_priori(1,:) P_priori(2,:) P_priori(3,:) P_priori(4,:)...
 output = [ state_priori' P_priori]';
 
 end
-% =========================================================================

@@ -52,16 +52,16 @@ time.sim_time  = time.start:time.step:time.stop;
 save_flag     = true;     % Save data to a .mat file
 post_flag     = true;     % Post-process the simulation data
     n_start   = 1; %floor(time_end*0.5); 
-    n_end     = time.stop+1;  
+    n_end     = time.stop + 1;  
     cov_flag  = 'on';    % Perform analysis of covariances
-plot_flag     = 0;     % Create output plots
+plot_flag     = 1;     % Create output plots
 print_flag    = 'off';    % Print plots to .eps files
 profiler_flag = false;    % Show profile simulink performance
 
 %% Real-world Simulator
 
 % Propagate target and chaser orbits
-ode_options = odeset('relTol', 1e-6, 'AbsTol', 1e-6);
+ode_options = odeset('relTol', 1e-9, 'AbsTol', 1e-9);
 [~,RV_target] = ode45(@(t,y) accelerations_diff_eq(t,y,Constants,PropOptions_target), time.sim_time, [R0_target, V0_target],ode_options);
 [~,RV_chaser] = ode45(@(t,y) accelerations_diff_eq(t,y,Constants,PropOptions_chaser), time.sim_time, [R0_chaser, V0_chaser],ode_options);
 
@@ -189,7 +189,7 @@ end
 %% Integrate NERM Dynamics from initial state estimate (for comparison)
 
 % Integration of the dynamics equations
-[~,NERM_output] = ode45(@(t,y) FFNAV_relative_motion_diff_eqns(t,y,Constants), time.sim_time, state0, ode_options);
+[~,NERM_output] = ode45(@(t,y) FFNAV_NERMdot(t,y,Constants), time.sim_time, state0, ode_options);
 % Note: Expect errors in the intial state to lead to inaccurate state estimates over time
 
 % Extract parameters of interest
@@ -211,12 +211,18 @@ P0 = [ P0(1,:) P0(2,:) P0(3,:) P0(4,:) P0(5,:) P0(6,:) P0(7,:) P0(8,:) P0(9,:) P
 EKF0 = [ state0' P0 meas0' ];
 
 % Specify when measurements are available for processing
+flag_is_measurement_available = zeros(length(time.sim_time),1);
 flag_is_measurement_available = ones(length(time.sim_time),1);
-%flag_is_measurement_available(60:5:end) = 1;
+%flag_is_measurement_available(1:5:end) = 1;
 
 % EKF Simulation Loop
 EKF_output = zeros(length(time.sim_time),243);
 EKF_output(1,1:117) = EKF0;
+
+% For 8-state measurement model
+%EKF_output = zeros(length(time.sim_time),262); 
+%EKF_output(1,1:118) = EKF0;
+
 for i_step = 2:length(time.sim_time)
 
     % Define the previous state

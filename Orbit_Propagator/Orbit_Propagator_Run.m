@@ -26,7 +26,7 @@ addpath('C:\Users\Cory\OneDrive\FFNAV Project\MATLAB Code\Orbit Propagator')
 OrbitalMechanicsConstants
 
 %Add path to formation parameters, load formation configuration
-pathname = fileparts('C:\Users\Cory\Desktop\FFNAV Data\');
+pathname = fileparts('C:\Users\coryt\Desktop\FFNAV Data\');
 Parameter_filename = 'PRISMA_Mod';
 
     % PRISMA_Mod = Modified PRISMA (LEO, low eccentricty)

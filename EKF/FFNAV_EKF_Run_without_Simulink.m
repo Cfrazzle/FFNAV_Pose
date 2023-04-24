@@ -69,5 +69,5 @@ simulate_EKF(input_data);
 t_run = toc;
 
 fprintf('EKF simulation complete \n')
-fprintf('Runtime = %f \n', t_run)
-fprintf('..............\\(-_-)/........................\n')
+fprintf('Runtime = %f \n\n', t_run)
+fprintf('.............. \\(^_^)/ ........................\n')

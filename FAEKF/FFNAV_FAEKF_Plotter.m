@@ -42,12 +42,16 @@ set(0,'DefaultAxesFontSize', AF_size)
 set(0,'DefaultTextFontSize', TF_size)
 set(0,'defaultLineLineWidth', Line_width)
 
-
 fig_id = 1; %Counter for figures
 
 plot_start  = 1;                %Starting time for plots
-plot_end    = length(time);     %Ending time for plots
-time_plot   = time/3600;        %Scale plot time from seconds to hours
+if isstruct(time)
+    plot_end    = length(time.sim_time);     %Ending time for plots
+    time_plot   = time.sim_time'/3600;        %Scale plot time from seconds to hours
+else
+    plot_end    = length(time);     %Ending time for plots
+    time_plot   = time/3600;        %Scale plot time from seconds to hours
+end
 
 %% Select Plots ===========================================================
 
@@ -58,34 +62,34 @@ NERM_3D_plot    = 0;        % 3D Positions from Dynamics Propagation
 Truth_3D_plot   = 1;        % 3D Positions from Truth Orbit Propagation
 
 % EKF State Estimates Time History
-EKF_subplot      = 0;        % Subplots of the EKF state  
-EKF_x_plot       = 0;        % EKF x-position state 
-EKF_y_plot       = 0;        % EKF y-position state 
-EKF_z_plot       = 0;        % EKF z-position state 
-EKF_theta_plot   = 0;        % EKF theta state 
-EKF_rt_plot      = 0;        % EKF rt state 
-EKF_xd_plot      = 0;        % EKF x-velocity state 
-EKF_yd_plot      = 0;        % EKF y-velocity state 
-EKF_zd_plot      = 0;        % EKF z-velocity state 
-EKF_thetad_plot  = 0;        % EKF theta-dot state 
-EKF_rtd_plot     = 0;        % EKF rt-dot state 
+EKF_subplot      = 1;        % Subplots of the EKF state  
+EKF_x_plot       = 1;        % EKF x-position state 
+EKF_y_plot       = 1;        % EKF y-position state 
+EKF_z_plot       = 1;        % EKF z-position state 
+EKF_theta_plot   = 1;        % EKF theta state 
+EKF_rt_plot      = 1;        % EKF rt state 
+EKF_xd_plot      = 1;        % EKF x-velocity state 
+EKF_yd_plot      = 1;        % EKF y-velocity state 
+EKF_zd_plot      = 1;        % EKF z-velocity state 
+EKF_thetad_plot  = 1;        % EKF theta-dot state 
+EKF_rtd_plot     = 1;        % EKF rt-dot state 
 
 % EKF State Error Time History
-EKF_error_subplot    = 0;        % Subplots of the EKF state errors 
-EKF_x_err_plot       = 0;        % EKF x-position state errors
-EKF_y_err_plot       = 0;        % EKF y-position state errors
-EKF_z_err_plot       = 0;        % EKF z-position state errors
-EKF_theta_err_plot   = 0;        % EKF theta state errors
-EKF_rt_err_plot      = 0;        % EKF rt state errors
-EKF_xd_err_plot      = 0;        % EKF x-velocity state errors
-EKF_yd_err_plot      = 0;        % EKF y-velocity state errors
-EKF_zd_err_plot      = 0;        % EKF z-velocity state errors
-EKF_thetad_err_plot  = 0;        % EKF theta-dot state errors
-EKF_rtd_err_plot     = 0;        % EKF rt-dot state errors
+EKF_error_subplot    = 1;        % Subplots of the EKF state errors 
+EKF_x_err_plot       = 1;        % EKF x-position state errors
+EKF_y_err_plot       = 1;        % EKF y-position state errors
+EKF_z_err_plot       = 1;        % EKF z-position state errors
+EKF_theta_err_plot   = 1;        % EKF theta state errors
+EKF_rt_err_plot      = 1;        % EKF rt state errors
+EKF_xd_err_plot      = 1;        % EKF x-velocity state errors
+EKF_yd_err_plot      = 1;        % EKF y-velocity state errors
+EKF_zd_err_plot      = 1;        % EKF z-velocity state errors
+EKF_thetad_err_plot  = 1;        % EKF theta-dot state errors
+EKF_rtd_err_plot     = 1;        % EKF rt-dot state errors
 
 %Covariance Plot Time History
-Q_cov_subplot       = 0;         % Subplots of the Q Covariances
-R_cov_subplot       = 0;         % Subplots of the R Covariances
+Q_cov_subplot       = 1;         % Subplots of the Q Covariances
+R_cov_subplot       = 1;         % Subplots of the R Covariances
 
 
 %Other Time History Plots
@@ -95,7 +99,7 @@ deltaDOD_plot       = 0;         % FAEKF Degree of Divergence Difference
 NIS_plot            = 0;         % FAEKF Normalized Innovations Squared
 
 %Animations
-RelativeMotion_Movie       = 1;  % 3D Positions w/ Earth
+RelativeMotion_Movie       = 0;  % 3D Positions w/ Earth
 RelativePosition_Animation = 0;  % 3D LVLH Position
 RelativeVelocity_Animation = 0;  % 3D LVLH Velocity
 
@@ -115,8 +119,8 @@ EKF_thetad_err_histo  = 0;        % EKF theta-dot state errors
 EKF_rtd_err_histo     = 0;        % EKF rt-dot state errors
 
 % EKF States and Errors, Side-by-side
-EKF_StatesError_pos = 0;
-EKF_StatesError_vel = 0;
+EKF_StatesError_pos = 1;
+EKF_StatesError_vel = 1;
 
 %% Plotting Routines ======================================================
 

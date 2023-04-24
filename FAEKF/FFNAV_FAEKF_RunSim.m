@@ -51,19 +51,27 @@ fprintf(' \t\t FFNAV EXTENDED KALMAN FILTER SIMULATION \t\t             \n')
 fprintf('--------------------------------------------------------------\n')
 
 % Define path to parameters/output data
-pathname = fileparts('C:\Users\Cory\Desktop\FFNAV Data\');
+paths.pwd = fileparts('C:\SoftwareRepos\FFNAV_Pose\');
+paths.FAEKF = [paths.pwd, '\FAEKF\'];
+paths.orbit_prop = [paths.pwd, '\Orbit_Propagator\'];
+paths.output = fileparts('C:\SoftwareRepos\FFNAV_Pose_Output\');
+
+% Add paths
+addpath(paths.pwd)
+addpath(paths.FAEKF)
+addpath(paths.orbit_prop)
+addpath(paths.output)
 
 % Check for parameter files
-if isempty(dir([pathname, '\*Params.mat']))
+if isempty(dir([paths.output, '\*Params.mat']))
     fprintf('Initialization parameters were not found in this directory...\n')
-    pause(2)
     fprintf('Generating initial parameters... \n')
     
-    mydir  = pwd;                       %Get current directory
-    idcs   = strfind(mydir,filesep);    %Index file separations
+    mydir  = pwd;                       %Get current directory 
+    idcs   = strfind(mydir,filesep);    %Index file separations 
     newdir = mydir(1:idcs(end)-1);      %Path to higher folder (1-level up)
     addpath(newdir)                     %Add path to location of MakeParams
-    FFNAV_EKF_MakeParams;               %Create a parameter file
+    FFNAV_EKF_MakeParams(paths);               %Create a parameter file
 end
 
 % =========================================================================
@@ -85,25 +93,26 @@ Parameter_filename = 'PRISMA';
     % LF_Hold    = Leader-follower Along-track holding position
     % BUSSE      = Busse Article   (LEO)
     
-file_in = fullfile(pathname, ['FFNAV_', Parameter_filename, '_Params.mat']);
+file_in = fullfile(paths.output, ['FFNAV_', Parameter_filename, '_Params.mat']);
 load(file_in)
 fprintf('\nParameter file loaded : %s  \n', [Parameter_filename, '_Params.mat'])
 
 % =========================================================================
 %% Select Orbit Propagator Options (1 = ON, 0 = OFF)
-PropOptions.J2              = 1;
-PropOptions.Sun             = 1;        %Assuming fixed position of Sun
-PropOptions.Moon            = 1;        %Assuming fixed position of Moon
+PropOptions.J2              = 1*0;
+PropOptions.Sun             = 1*0;        %Assuming fixed position of Sun
+PropOptions.Moon            = 1*0;        %Assuming fixed position of Moon
 PropOptions.Planets         = 0;        %Assuming fixed positions of planets
-PropOptions.Drag            = 1;        %Using Harris-Priester Model  
-PropOptions.SolarRad        = 1;        
+PropOptions.Drag            = 1*0;        %Using Harris-Priester Model  
+PropOptions.SolarRad        = 1*0;        
     PropOptions.ShadowModel = 0;        %0=Cylindrical Shadow, 1=Geometric 
 PropOptions.Relativity      = 0;        
 PropOptions.GravEl_Earth    = 0;        %NOT COMPLETE
     
 %Add path to orbit propagator, load orbital mechanics constants
-addpath('C:\Users\Cory\OneDrive\FFNAV Project\MATLAB Code\Orbit Propagator')
-OrbitalMechanicsConstants
+%addpath('C:\Users\Cory\OneDrive\FFNAV Project\MATLAB Code\Orbit Propagator')
+%OrbitalMechanicsConstants
+load('AstroConstants.mat')
     
 fprintf('Astrodynamic constants: %s \n', ConstantsModel)
 fprintf('Orbital Perturbations : ')
@@ -174,7 +183,7 @@ Q_adapt = 0;
 R_adapt = 0; 
 
 % Select Residuals Smoothing Options - MLE-AEKF & FAEKF (1 = ON, 0 = OFF)
-Smooth_flag = '1';
+Smooth_flag = '0';
 N_window    = 30;  %Running-Average Window Size 
 %N=5 seems to work better for MLE-AEKF
 
@@ -182,16 +191,16 @@ N_window    = 30;  %Running-Average Window Size
 %% Select Simulation Options
 time_start   = 0;                           % Start time of the simulation
 time_step    = 1;                           % Time step for the simulation
-orbit_num    = 5;                           % Number of orbits to simulate
+orbit_num    = 2;                           % Number of orbits to simulate
 time_end     = ceil(orbit_num*T_target);    % End time of the simulation
 
 % Post Processing Options
 save_flag     = 'on';     % Save data to a .mat file
 post_flag     = 'on';     % Post-process the simulation data
-    n_start   = floor(time_end*0.5); 
+    n_start   = 1; %floor(time_end*0.5); 
     n_end     = time_end+1;  
     cov_flag  = 'on';    % Perform analysis of covariances
-plot_flag     = 'on';     % Create output plots
+plot_flag     = 'off';     % Create output plots
 print_flag    = 'off';    % Print plots to .eps files
 profiler_flag = 'off';    % Show profile simulink performance
 
@@ -338,13 +347,13 @@ clearvars -except   EKF_output   GPS_output     NERM_output             ...
                     save_flag    post_flag      plot_flag   print_flag  ...
                     pathname     Parameter_filename         Sim_filename...
                     File_specifier Constants...
-                    profiler_flag  cov_flag Q_adapt R_adapt n_start n_end;
+                    profiler_flag  cov_flag Q_adapt R_adapt n_start n_end paths;
                     
 if strcmp(save_flag, 'on') %(1:end-10) for line below
     file_out = strcat(Parameter_filename, ['_', EKF_name,...
                             '_',File_specifier]);
     clear save_output
-    file_out = fullfile(pathname, file_out);
+    file_out = fullfile(paths.output, '\',file_out);
     save(file_out);        
 end
 
@@ -357,9 +366,6 @@ if strcmp(post_flag, 'on')
     fprintf('Post-processing Time = %f \n', t_process)
 end
 
-load gong
-sound(y,Fs) 
-
 % Plotting
 if strcmp(plot_flag, 'on')           
     FFNAV_FAEKF_Plotter(file_out)
@@ -369,6 +375,9 @@ end
 if strcmp(profiler_flag,'on')
     profile viewer
 end
+
+%load gong
+%sound(y,Fs) 
 
 fprintf('--------------------------------------------------------------\n')
 % =========================================================================
